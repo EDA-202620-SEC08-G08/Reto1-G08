@@ -1,11 +1,20 @@
 import time
+import csv
+import os
 
-def new_logic():
+from DataStructures.List import array_list as lt
+
+
+def new_logic(catalog):
     """
     Crea el catalogo para almacenar las estructuras de datos
     """
-    #TODO: Llama a las funciónes de creación de las estructuras de datos
-    pass
+    
+    catalog={
+        "orders": lt.new_list()
+    }
+
+
 
 
 # Funciones para la carga de datos
@@ -14,18 +23,55 @@ def load_data(catalog, filename):
     """
     Carga los datos del reto
     """
-    # TODO: Realizar la carga de datos
-    pass
+    start_time = get_time()
+    csv.field_size_limit(2147483647)
+    path=os.path.join("Data", "Data",filename)
+    with open(path, encoding="utf-8") as file:
+        reader = csv.DictReader(file)
+        for row in reader:
+            lt.add_last(catalog["orders"], row)
+    end_time = get_time()
+    return catalog, delta_time(start_time, end_time)
 
 # Funciones de consulta sobre el catálogo
 
 
-def req_1(catalog):
+def req_1(catalog,product):
     """
     Retorna el resultado del requerimiento 1
     """
     # TODO: Modificar el requerimiento 1
-    pass
+    start_time = get_time()
+    orders = catalog["orders"]
+    total= lt.size(orders)
+    count=0
+    sum_price=0
+    min_price=None
+    max_price=None
+    sum_discount=0
+    min_discount=None
+    max_discount=None
+    sum_boxes=0
+    min_boxes=None
+    max_boxes=None
+    sum_marketing=0
+    min_marketing=None
+    max_marketing=None
+    years={}
+    max_amount_order=None
+    min_amount_order=None
+    for i in range(total):
+        order= lt.get_element(orders,i)
+        if order["product_name"]!=product:
+            continue
+        count+=1
+        price=float(order["Price_per_box"])
+        discount=float(order["Discount_pct"])
+        
+    
+    
+    
+    
 
 
 def req_2(catalog):
