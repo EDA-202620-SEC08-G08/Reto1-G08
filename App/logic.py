@@ -26,7 +26,7 @@ def load_data(catalog, filename):
     start_time = get_time()
     csv.field_size_limit(2147483647)
     path=os.path.join("Data", "Data",filename)
-    with open(path, encoding="utf-8") as file:
+    with open(path, encoding="utf-8-sig") as file:
         reader = csv.DictReader(file)
         for row in reader:
             lt.add_last(catalog["orders"], row)
@@ -71,6 +71,7 @@ def req_1(catalog,product):
         marketing=float(order["Marketing_Spend"])
         amount=float(order["Amount"])
         year=order["Order_Date"][:4]
+        
         sum_price+=price
         if min_price is None or price <min_price:
             min_price=price
@@ -97,11 +98,26 @@ def req_1(catalog,product):
 
         years[year]=years.get(year,0)+1
         
-        if max_amount_order is None or amount >float(max_amount_order):
-            max_amount_order=amount
-        if min_amount_order is None or amount <float(min_amount_order):
-            min_amount_order=amount
-        
+        if max_amount_order is None:
+            max_amount_order= order
+        elif amount>float(max_amount_order["Amount"]):
+            max_amount_order=order
+        elif amount == float(max_amount_order["Amount"]) and marketing < float(max_amount_order["Marketing_Spend"]):
+            max_amount_order=order
+            
+        if min_amount_order is None:
+            min_amount_order= order
+        elif amount<float(min_amount_order["Amount"]):
+            min_amount_order=order
+        elif amount == float(min_amount_order["Amount"]) and marketing < float(min_amount_order["Marketing_Spend"]):
+            min_amount_order=order
+
+    top_year=None
+    top_year_count=0
+    for y, c in years.items():
+        if c>top_year_count:
+            top_year=y
+            top_year_count=c
     end_time = get_time()
         
     result = {
@@ -113,13 +129,15 @@ def req_1(catalog,product):
         "avg_discount": sum_discount/count if count>0 else 0,
         "min_discount": min_discount,
         "max_discount": max_discount,
-        "sum_boxes": sum_boxes,
+        "avg_boxes": sum_boxes/count if count>0 else 0,
         "min_boxes": min_boxes,
         "max_boxes": max_boxes,
-        "sum_marketing": sum_marketing,
+        "avg_marketing": sum_marketing/count if count>0 else 0,
         "min_marketing": min_marketing,
         "max_marketing": max_marketing,
         "years": years,
+        "top_year": top_year,
+        "top_year_count": top_year_count,
         "max_amount_order": max_amount_order,
         "min_amount_order": min_amount_order,
     }
