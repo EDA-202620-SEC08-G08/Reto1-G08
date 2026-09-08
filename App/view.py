@@ -1,12 +1,13 @@
 import sys
-
+import App.logic as logic
 
 def new_logic():
     """
         Se crea una instancia del controlador
     """
-    #TODO: Llamar la función de la lógica donde se crean las estructuras de datos
-    pass
+    control = logic.new_logic()
+    return control
+
 
 def print_menu():
     print("Bienvenido")
@@ -23,9 +24,10 @@ def load_data(control):
     """
     Carga los datos
     """
-    #TODO: Realizar la carga de datos
-    pass
-
+    filename=input("Ingrese el nombre del archivo a cargar: ")
+    control,time = logic.load_data(control, filename)
+    print(f"Datos cargados en {time} segundos")
+    return control
 
 def print_data(control, id):
     """
@@ -38,8 +40,30 @@ def print_req_1(control):
     """
         Función que imprime la solución del Requerimiento 1 en consola
     """
-    # TODO: Imprimir el resultado del requerimiento 1
-    pass
+    product = input("Ingrese el nombre del producto: ")
+    result, time=logic.req_1(control, product)
+    avg_boxes = result['sum_boxes'] / result['count'] if result['count'] > 0 else 0
+    avg_marketing = result['sum_marketing'] / result['count'] if result['count'] > 0 else 0
+    print(f"Requerimiento 1 ejecutado en {time} segundos")
+    print(f"Producto: {result['product']}")
+    print(f"Cantidad de ordenes: {result['count']}")
+    print(f"Precio promedio: {result['avg_price']}")
+    print(f"Precio mínimo: {result['min_price']}")
+    print(f"Precio máximo: {result['max_price']}")
+    print(f"Descuento promedio: {result['avg_discount']}")
+    print(f"Descuento mínimo: {result['min_discount']}")
+    print(f"Descuento máximo: {result['max_discount']}")
+    print(f"Cantidad de cajas enviadas total: {result['sum_boxes']}")
+    print(f"Cantidad de cajas enviadas promedio: {avg_boxes:.2f}")
+    print(f"Cantidad de cajas enviadas mínima: {result['min_boxes']}")
+    print(f"Cantidad de cajas enviadas máxima: {result['max_boxes'] / result['count']:.2f}")
+    print(f"Gasto en marketing total: {result['sum_marketing']:.2f}")
+    print(f"Gasto en marketing promedio: {avg_marketing:.2f}")
+    print(f"Gasto en marketing mínimo: {result['min_marketing']}")
+    print(f"Gasto en marketing máximo: {result['max_marketing']}")
+    print(f"Ordenes por año: {result['years']}")
+    print(f"Order de mayor valor: {result['max_amount_order']}")
+    print(f"Order de menor valor: {result['min_amount_order']}")
 
 
 def print_req_2(control):

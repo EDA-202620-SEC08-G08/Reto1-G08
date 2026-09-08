@@ -5,7 +5,7 @@ import os
 from DataStructures.List import array_list as lt
 
 
-def new_logic(catalog):
+def new_logic():
     """
     Crea el catalogo para almacenar las estructuras de datos
     """
@@ -13,7 +13,7 @@ def new_logic(catalog):
     catalog={
         "orders": lt.new_list()
     }
-
+    return catalog
 
 
 
@@ -62,14 +62,68 @@ def req_1(catalog,product):
     min_amount_order=None
     for i in range(total):
         order= lt.get_element(orders,i)
-        if order["product_name"]!=product:
+        if order["Product"]!=product:
             continue
         count+=1
-        price=float(order["Price_per_box"])
-        discount=float(order["Discount_pct"])
+        price=float(order["Price_per_Box"])
+        discount=float(order["Discount_Pct"])
+        boxes=int(order["Boxes_Shipped"])
+        marketing=float(order["Marketing_Spend"])
+        amount=float(order["Amount"])
+        year=order["Order_Date"][:4]
+        sum_price+=price
+        if min_price is None or price <min_price:
+            min_price=price
+        if max_price is None or price >max_price:
+            max_price=price
+            
+        sum_discount+=discount
+        if min_discount is None or discount <min_discount:
+            min_discount=discount
+        if max_discount is None or discount >max_discount:
+            max_discount=discount
+
+        sum_boxes+=boxes
+        if min_boxes is None or boxes <min_boxes:
+            min_boxes=boxes
+        if max_boxes is None or boxes >max_boxes:
+            max_boxes=boxes
+
+        sum_marketing+=marketing
+        if min_marketing is None or marketing <min_marketing:
+            min_marketing=marketing
+        if max_marketing is None or marketing >max_marketing:
+            max_marketing=marketing
+
+        years[year]=years.get(year,0)+1
         
-    
-    
+        if max_amount_order is None or amount >float(max_amount_order):
+            max_amount_order=amount
+        if min_amount_order is None or amount <float(min_amount_order):
+            min_amount_order=amount
+        
+    end_time = get_time()
+        
+    result = {
+        "product": product,
+        "count": count,
+        "avg_price": sum_price/count if count>0 else 0,
+        "min_price": min_price,
+        "max_price": max_price,
+        "avg_discount": sum_discount/count if count>0 else 0,
+        "min_discount": min_discount,
+        "max_discount": max_discount,
+        "sum_boxes": sum_boxes,
+        "min_boxes": min_boxes,
+        "max_boxes": max_boxes,
+        "sum_marketing": sum_marketing,
+        "min_marketing": min_marketing,
+        "max_marketing": max_marketing,
+        "years": years,
+        "max_amount_order": max_amount_order,
+        "min_amount_order": min_amount_order,
+    }
+    return result, delta_time(start_time, end_time)
     
     
 
