@@ -154,12 +154,59 @@ def req_2(catalog):
     pass
 
 
-def req_3(catalog):
+def req_3(catalog, country, channel):
     """
     Retorna el resultado del requerimiento 3
     """
     # TODO: Modificar el requerimiento 3
-    pass
+    start_time = get_time()
+    orders = catalog["orders"]
+    count = 0
+    max = 0
+    buscar_prod = {}
+    buscar_ano = {}
+    result = {
+              "prom_box" : 0,
+              "prom_disc" : 0,
+              "prom_mark" : 0,
+              "prom_box_ship" : 0,
+              "prod_frec" : None,
+              "ano_frec" : None
+              }
+    for pos in range(0, lt.size(orders)):
+        orden = lt.get_element(orders, pos)
+        if country == orden["Country"] and channel == orden["Channel"]:
+            count += 1
+            result["prom_box"] += orden["Price_per_Box"]
+            result["prom_disc"] += orden["Discount_Pct"]
+            result["prom_mark"] += orden["Marketing_Spend"]
+            result["prom_box_ship"] += orden["Boxes_Shipped"]
+            buscar_prod[orden["Product"]] = buscar_prod.get(orden["Product"], 0) + 1
+            buscar_ano[orden["Order_Date"][:4]] = buscar_ano.get(orden["Order_date"][:4], 0) + 1
+    if count != 0:      
+        result["prom_box"] = result["prom_box"] / count
+        result["prom_disc"] = result["prom_disc"] / count
+        result["prom_mark"] = result["prom_mark"] / count
+        result["prom_box_ship"] = result["prom_box_ship"] / count
+    else:
+        return None
+    
+    for llave, valor in buscar_prod:
+        if valor > max:
+            max = valor
+            result["prod_frec"] = llave
+    
+    max = 0
+    
+    for llave, valor in buscar_ano:
+            if valor > max:
+                max = valor
+                result["ano_frec"] = llave
+    
+    end_time = get_time()
+    time = delta_time(start_time, end_time)
+    
+    return time, count, result
 
 
 def req_4(catalog):
