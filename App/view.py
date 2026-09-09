@@ -135,8 +135,20 @@ def print_req_3(control):
     """
         Función que imprime la solución del Requerimiento 3 en consola
     """
-    # TODO: Imprimir el resultado del requerimiento 3
-    pass
+    country = input("Ingrese el pais: ")
+    channel = input("Ingrese el canal: ")
+    if logic.req_3(control, country, channel) != None:
+        time, count, result = logic.req_3(control, country, channel)
+        print(f"El tiempo requerido fue {time} segundos")
+        print(f"Se encontraron {count} pedidos que pasaron el filtro")
+        print(f"Promedio precios de cajas: {result['prom_box']}")
+        print(f"Promedio gasto marketing: {result['prom_mark']}")
+        print(f"Promedio cajas importadas: {result['prom_box_ship']}")
+        print(f"Producto mas frecuente: {result['prod_frec']}")
+        print(f"Ano mas pedido: {result['ano_frec']}")
+    else:
+        print(f"No se encontro por el filtro")
+    
 
 
 def print_req_4(control):
