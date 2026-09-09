@@ -146,13 +146,107 @@ def req_1(catalog,product):
     
 
 
-def req_2(catalog):
+def req_2(catalog, min_price, max_price):
     """
     Retorna el resultado del requerimiento 2
     """
     # TODO: Modificar el requerimiento 2
-    pass
+    start_time = get_time()
 
+    orders = catalog["orders"]
+    total = lt.size(orders)
+
+    count = 0
+    sum_discount = 0
+    sum_marketing = 0
+    sum_price = 0
+
+    recent_order = None
+    min_amount_order = None
+    max_amount_order = None
+
+    for i in range(total):
+        order = lt.get_element(orders, i)
+
+        price = float(order["Price_per_Box"])
+
+        if price < min_price or price > max_price:
+            continue
+
+        count += 1
+
+        discount = float(order["Discount_Pct"])
+        marketing = float(order["Marketing_Spend"])
+        amount = float(order["Amount"])
+        date = order["Order_Date"]
+
+        sum_discount += discount
+        sum_marketing += marketing
+        sum_price += price
+
+        if recent_order is None:
+            recent_order = order
+
+        else:
+            recent_date = recent_order["Order_Date"]
+
+            if date > recent_date:
+                recent_order = order
+
+            elif date == recent_date:
+                if amount > float(recent_order["Amount"]):
+                    recent_order = order
+
+        if min_amount_order is None:
+            min_amount_order = order
+
+        else:
+            current_min_amount = float(min_amount_order["Amount"])
+            current_min_price = float(min_amount_order["Price_per_Box"])
+
+            if amount < current_min_amount:
+                min_amount_order = order
+
+            elif amount == current_min_amount:
+                if price < current_min_price:
+                    min_amount_order = order
+
+        if max_amount_order is None:
+            max_amount_order = order
+
+        else:
+            current_max_amount = float(max_amount_order["Amount"])
+            current_max_price = float(max_amount_order["Price_per_Box"])
+
+            if amount > current_max_amount:
+                max_amount_order = order
+
+            elif amount == current_max_amount:
+                if price < current_max_price:
+                    max_amount_order = order
+
+    if count > 0:
+        avg_discount = sum_discount / count
+        avg_marketing = sum_marketing / count
+        avg_price = sum_price / count
+    else:
+        avg_discount = 0
+        avg_marketing = 0
+        avg_price = 0
+
+    end_time = get_time()
+
+    result = {
+        "count": count,
+        "avg_discount": avg_discount,
+        "avg_marketing": avg_marketing,
+        "avg_price": avg_price,
+        "recent_order": recent_order,
+        "min_amount_order": min_amount_order,
+        "max_amount_order": max_amount_order
+    }
+
+    return result, delta_time(start_time, end_time)
 
 def req_3(catalog):
     """

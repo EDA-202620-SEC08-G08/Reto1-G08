@@ -84,7 +84,51 @@ def print_req_2(control):
         Función que imprime la solución del Requerimiento 2 en consola
     """
     # TODO: Imprimir el resultado del requerimiento 2
-    pass
+    min_price = float(input("Ingrese el precio mínimo por caja: "))
+    max_price = float(input("Ingrese el precio máximo por caja: "))
+
+    result, time = logic.req_2(control, min_price, max_price)
+
+    print(f"\nRequerimiento 2 ejecutado en {time:.3f} milisegundos")
+    print(f"Cantidad de pedidos encontrados: {result['count']}")
+
+    if result["count"] == 0:
+        print("No se encontraron pedidos en ese rango de precio.")
+        return
+
+    print(f"Promedio de descuento: {result['avg_discount']:.2f}")
+    print(f"Promedio de inversión en marketing: ${result['avg_marketing']:.2f}")
+    print(f"Promedio de precio por caja: ${result['avg_price']:.2f}")
+
+    recent_order = result["recent_order"]
+
+    print("\nPedido más reciente:")
+    print(f"  Producto: {recent_order['Product']}")
+    print(f"  País: {recent_order['Country']}")
+    print(f"  Canal: {recent_order['Channel']}")
+    print(f"  Fecha: {recent_order['Order_Date']}")
+    print(f"  Precio por caja: ${float(recent_order['Price_per_Box']):.2f}")
+    print(f"  Monto: ${float(recent_order['Amount']):.2f}")
+
+    min_order = result["min_amount_order"]
+
+    print("\nPedido de menor Amount:")
+    print(f"  Producto: {min_order['Product']}")
+    print(f"  País: {min_order['Country']}")
+    print(f"  Canal: {min_order['Channel']}")
+    print(f"  Fecha: {min_order['Order_Date']}")
+    print(f"  Precio por caja: ${float(min_order['Price_per_Box']):.2f}")
+    print(f"  Monto: ${float(min_order['Amount']):.2f}")
+
+    max_order = result["max_amount_order"]
+
+    print("\nPedido de mayor Amount:")
+    print(f"  Producto: {max_order['Product']}")
+    print(f"  País: {max_order['Country']}")
+    print(f"  Canal: {max_order['Channel']}")
+    print(f"  Fecha: {max_order['Order_Date']}")
+    print(f"  Precio por caja: ${float(max_order['Price_per_Box']):.2f}")
+    print(f"  Monto: ${float(max_order['Amount']):.2f}")
 
 
 def print_req_3(control):
