@@ -407,12 +407,89 @@ def req_5(catalog, filtro, product, start_date, end_date):
 
     return result, delta_time(start_time, end_time)
 
-def req_6(catalog):
+def req_6(catalog,start_date,end_date):
     """
     Retorna el resultado del requerimiento 6
     """
-    # TODO: Modificar el requerimiento 6
-    pass
+    start_time = get_time()
+    orders = catalog["orders"]
+    total= lt.size(orders)
+    
+    filter=sl.new_list()
+    for i in range(total):
+        order= lt.get_element(orders,i)
+        date=order["Order_Date"]
+        if start_date <=date <=end_date:
+            sl.add_last(filter, order)
+    
+    count=sl.size(filter)
+    channels={}
+    node = filter["first"]
+    while node is not None:
+        order = node["info"]
+        channel=order["Channel"]
+        amount=float(order["Amount"])
+        price=float(order["Price_per_Box"])
+        marketing=float(order["Marketing_Spend"])
+        
+        if channel not in channels:
+            channels[channel]={"count":0,
+                              "sum_amount":0,
+                              "sum_price":0,
+                              "sum_marketing":0,
+                              "max_order":None,
+                              "min_order":None
+        }
+        
+        c=channels[channel]
+        c["count"]+=1
+        c["sum_amount"]+=amount
+        c["sum_price"]+=price
+        c["sum_marketing"]+=marketing
+        
+        if c["max_order"] is None or amount>float(c["max_order"]["Amount"]):
+            c["max_order"]=order
+        if c["min_order"] is None or amount<float(c["min_order"]["Amount"]):
+            c["min_order"]=order
+
+        node = node["next"]
+      
+        
+    top_channel=None
+    top_channel_count=0
+    top_channel_amount=0
+    top_revenue_channel=None
+    top_revenue_amount=0
+    top_revenue_count=0
+        
+    for name, data in channels.items():
+        data["avg_price"] = data["sum_price"] / data["count"] if data["count"] > 0 else 0
+        data["avg_marketing"] = data["sum_marketing"] / data["count"] if data["count"] > 0 else 0
+
+        if data["count"] > top_channel_count:
+            top_channel_name = name
+            top_channel_count = data["count"]
+            top_channel_amount = data["sum_amount"]
+
+        if data["sum_amount"] > top_revenue_amount:
+            top_revenue_name = name
+            top_revenue_amount = data["sum_amount"]
+            top_revenue_count = data["count"]
+
+        
+    end_time = get_time()
+
+    result = {
+        "count": count,
+        "top_channel_name": top_channel_name,
+        "top_channel_count": top_channel_count,
+        "top_channel_amount": top_channel_amount,
+        "top_revenue_name": top_revenue_name,
+        "top_revenue_count": top_revenue_count,
+        "top_revenue_amount": top_revenue_amount,
+        "channels": channels,
+    }
+    return result, delta_time(start_time, end_time)
 
 
 # Funciones para medir tiempos de ejecucion
