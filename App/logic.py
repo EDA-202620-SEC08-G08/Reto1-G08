@@ -322,7 +322,6 @@ def req_5(catalog, filtro, product, start_date, end_date):
     start_time = get_time()
 
     orders = catalog["orders_linked"]
-    total = slt.size(orders)
 
     count = 0
     sum_price = 0
@@ -331,59 +330,59 @@ def req_5(catalog, filtro, product, start_date, end_date):
 
     selected_order = None
 
-    for i in range(total):
-        order = slt.get_element(orders, i)
+    node = orders["first"]
 
-        if order["Product"] != product:
-            continue
+    while node is not None:
+        order = node["info"]
 
-        date = order["Order_Date"]
+        if order["Product"] == product:
+            date = order["Order_Date"]
 
-        if date < start_date or date > end_date:
-            continue
+            if start_date <= date <= end_date:
+                count += 1
 
-        count += 1
+                price = float(order["Price_per_Box"])
+                boxes = int(order["Boxes_Shipped"])
+                marketing = float(order["Marketing_Spend"])
+                amount = float(order["Amount"])
 
-        price = float(order["Price_per_Box"])
-        boxes = int(order["Boxes_Shipped"])
-        marketing = float(order["Marketing_Spend"])
-        amount = float(order["Amount"])
+                sum_price += price
+                sum_boxes += boxes
+                sum_marketing += marketing
 
-        sum_price += price
-        sum_boxes += boxes
-        sum_marketing += marketing
-
-        if selected_order is None:
-            selected_order = order
-
-        else:
-            selected_amount = float(selected_order["Amount"])
-            selected_price = float(selected_order["Price_per_Box"])
-            selected_marketing = float(selected_order["Marketing_Spend"])
-
-            if filtro == "MENOR":
-                if amount < selected_amount:
+                if selected_order is None:
                     selected_order = order
 
-                elif amount == selected_amount:
-                    if price < selected_price:
-                        selected_order = order
+                else:
+                    selected_amount = float(selected_order["Amount"])
+                    selected_price = float(selected_order["Price_per_Box"])
+                    selected_marketing = float(selected_order["Marketing_Spend"])
 
-                    elif price == selected_price:
-                        if marketing < selected_marketing:
+                    if filtro == "MENOR":
+                        if amount < selected_amount:
                             selected_order = order
 
-            elif filtro == "MAYOR":
-                if amount > selected_amount:
-                    selected_order = order
+                        elif amount == selected_amount:
+                            if price < selected_price:
+                                selected_order = order
 
-                elif amount == selected_amount:
-                    if price < selected_price:
-                        selected_order = order
+                            elif price == selected_price:
+                                if marketing < selected_marketing:
+                                    selected_order = order
 
-                    elif price == selected_price:
-                        if marketing < selected_marketing:
+                    elif filtro == "MAYOR":
+                        if amount > selected_amount:
                             selected_order = order
+
+                        elif amount == selected_amount:
+                            if price < selected_price:
+                                selected_order = order
+
+                            elif price == selected_price:
+                                if marketing < selected_marketing:
+                                    selected_order = order
+
+        node = node["next"]
 
     if count > 0:
         avg_price = sum_price / count
@@ -406,7 +405,6 @@ def req_5(catalog, filtro, product, start_date, end_date):
     }
 
     return result, delta_time(start_time, end_time)
-
 def req_6(catalog,start_date,end_date):
     """
     Retorna el resultado del requerimiento 6
