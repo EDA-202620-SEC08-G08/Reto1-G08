@@ -164,12 +164,10 @@ def print_req_5(control):
         Función que imprime la solución del Requerimiento 5 en consola
     """
     # TODO: Imprimir el resultado del requerimiento 5
-    filtro = input("Ingrese MENOR o MAYOR: ")
-    filtro = filtro.upper()
-
+    filtro = input("Ingrese MENOR o MAYOR: ").upper()
     product = input("Ingrese el nombre del producto: ")
-    start_date = input("Ingrese la fecha inicial: ")
-    end_date = input("Ingrese la fecha final: ")
+    start_date = input("Ingrese la fecha inicial (YYYY-MM-DD): ")
+    end_date = input("Ingrese la fecha final (YYYY-MM-DD): ")
 
     if filtro != "MENOR" and filtro != "MAYOR":
         print("El filtro debe ser MENOR o MAYOR.")
@@ -183,28 +181,27 @@ def print_req_5(control):
         end_date
     )
 
-    print("Requerimiento 5 ejecutado en", time, "milisegundos")
-    print("Filtro utilizado:", result["filter"])
-    print("Cantidad de pedidos encontrados:", result["count"])
+    print(f"\nRequerimiento 5 ejecutado en {time:.3f} milisegundos")
+    print(f"Filtro utilizado: {result['filter']}")
+    print(f"Cantidad de pedidos encontrados: {result['count']}")
 
     if result["count"] == 0:
-        print("No se encontraron pedidos.")
+        print("No se encontraron pedidos con ese producto en el rango de fechas.")
         return
 
-    print("Precio promedio por caja:", result["avg_price"])
-    print("Promedio de cajas enviadas:", result["avg_boxes"])
-    print("Promedio de inversión en marketing:", result["avg_marketing"])
+    print(f"\nPrecio promedio por caja: ${result['avg_price']:.2f}")
+    print(f"Promedio de cajas enviadas: {result['avg_boxes']:.2f}")
+    print(f"Promedio de inversión en marketing: ${result['avg_marketing']:.2f}")
 
     order = result["selected_order"]
 
-    print("Pedido seleccionado:")
-    print("Precio por caja:", order["Price_per_Box"])
-    print("Cajas enviadas:", order["Boxes_Shipped"])
-    print("Monto:", order["Amount"])
-    print("Canal:", order["Channel"])
-    print("Fecha:", order["Order_Date"])
-    print("Inversión en marketing:", order["Marketing_Spend"])
-
+    print(f"\nPedido seleccionado ({result['filter']} Amount):")
+    print(f"  Precio por caja: ${float(order['Price_per_Box']):.2f}")
+    print(f"  Cajas enviadas: {order['Boxes_Shipped']}")
+    print(f"  Monto: ${float(order['Amount']):.2f}")
+    print(f"  Canal: {order['Channel']}")
+    print(f"  Fecha: {order['Order_Date']}")
+    print(f"  Inversión en marketing: ${float(order['Marketing_Spend']):.2f}")
 
 def print_req_6(control):
     """
