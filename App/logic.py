@@ -3,6 +3,7 @@ import csv
 import os
 
 from DataStructures.List import array_list as lt
+from DataStructures.List import single_linked_list as slt
 
 
 def new_logic():
@@ -11,7 +12,8 @@ def new_logic():
     """
     
     catalog={
-        "orders": lt.new_list()
+        "orders": lt.new_list(),
+        "orders_linked": slt.new_list()
     }
     return catalog
 
@@ -30,6 +32,7 @@ def load_data(catalog, filename):
         reader = csv.DictReader(file)
         for row in reader:
             lt.add_last(catalog["orders"], row)
+            slt.add_last(catalog["orders_linked"], row)
     end_time = get_time()
     return catalog, delta_time(start_time, end_time)
 
@@ -311,12 +314,98 @@ def req_4(catalog):
     pass
 
 
-def req_5(catalog):
+def req_5(catalog, filtro, product, start_date, end_date):
     """
     Retorna el resultado del requerimiento 5
     """
     # TODO: Modificar el requerimiento 5
-    pass
+    start_time = get_time()
+
+    orders = catalog["orders_linked"]
+    total = slt.size(orders)
+
+    count = 0
+    sum_price = 0
+    sum_boxes = 0
+    sum_marketing = 0
+
+    selected_order = None
+
+    for i in range(total):
+        order = slt.get_element(orders, i)
+
+        if order["Product"] != product:
+            continue
+
+        date = order["Order_Date"]
+
+        if date < start_date or date > end_date:
+            continue
+
+        count += 1
+
+        price = float(order["Price_per_Box"])
+        boxes = int(order["Boxes_Shipped"])
+        marketing = float(order["Marketing_Spend"])
+        amount = float(order["Amount"])
+
+        sum_price += price
+        sum_boxes += boxes
+        sum_marketing += marketing
+
+        if selected_order is None:
+            selected_order = order
+
+        else:
+            selected_amount = float(selected_order["Amount"])
+            selected_price = float(selected_order["Price_per_Box"])
+            selected_marketing = float(selected_order["Marketing_Spend"])
+
+            if filtro == "MENOR":
+                if amount < selected_amount:
+                    selected_order = order
+
+                elif amount == selected_amount:
+                    if price < selected_price:
+                        selected_order = order
+
+                    elif price == selected_price:
+                        if marketing < selected_marketing:
+                            selected_order = order
+
+            elif filtro == "MAYOR":
+                if amount > selected_amount:
+                    selected_order = order
+
+                elif amount == selected_amount:
+                    if price < selected_price:
+                        selected_order = order
+
+                    elif price == selected_price:
+                        if marketing < selected_marketing:
+                            selected_order = order
+
+    if count > 0:
+        avg_price = sum_price / count
+        avg_boxes = sum_boxes / count
+        avg_marketing = sum_marketing / count
+    else:
+        avg_price = 0
+        avg_boxes = 0
+        avg_marketing = 0
+
+    end_time = get_time()
+
+    result = {
+        "filter": filtro,
+        "count": count,
+        "selected_order": selected_order,
+        "avg_price": avg_price,
+        "avg_boxes": avg_boxes,
+        "avg_marketing": avg_marketing
+    }
+
+    return result, delta_time(start_time, end_time)
 
 def req_6(catalog):
     """
