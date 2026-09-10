@@ -164,7 +164,46 @@ def print_req_5(control):
         Función que imprime la solución del Requerimiento 5 en consola
     """
     # TODO: Imprimir el resultado del requerimiento 5
-    pass
+    filtro = input("Ingrese MENOR o MAYOR: ")
+    filtro = filtro.upper()
+
+    product = input("Ingrese el nombre del producto: ")
+    start_date = input("Ingrese la fecha inicial: ")
+    end_date = input("Ingrese la fecha final: ")
+
+    if filtro != "MENOR" and filtro != "MAYOR":
+        print("El filtro debe ser MENOR o MAYOR.")
+        return
+
+    result, time = logic.req_5(
+        control,
+        filtro,
+        product,
+        start_date,
+        end_date
+    )
+
+    print("Requerimiento 5 ejecutado en", time, "milisegundos")
+    print("Filtro utilizado:", result["filter"])
+    print("Cantidad de pedidos encontrados:", result["count"])
+
+    if result["count"] == 0:
+        print("No se encontraron pedidos.")
+        return
+
+    print("Precio promedio por caja:", result["avg_price"])
+    print("Promedio de cajas enviadas:", result["avg_boxes"])
+    print("Promedio de inversión en marketing:", result["avg_marketing"])
+
+    order = result["selected_order"]
+
+    print("Pedido seleccionado:")
+    print("Precio por caja:", order["Price_per_Box"])
+    print("Cajas enviadas:", order["Boxes_Shipped"])
+    print("Monto:", order["Amount"])
+    print("Canal:", order["Channel"])
+    print("Fecha:", order["Order_Date"])
+    print("Inversión en marketing:", order["Marketing_Spend"])
 
 
 def print_req_6(control):
