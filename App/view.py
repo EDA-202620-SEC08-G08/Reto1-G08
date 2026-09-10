@@ -1,3 +1,4 @@
+from DataStructures.List import array_list as lt
 import sys
 import App.logic as logic
 
@@ -33,8 +34,12 @@ def print_data(control, id):
     """
         Función que imprime un dato dado su ID
     """
-    #TODO: Realizar la función para imprimir un elemento
-    pass
+    orders = control["orders"]
+    for pos in range(lt.size(orders)):
+        order = lt.get_element(orders, pos)
+        if order["Order_ID"] == id:
+            return order
+    return None
 
 def print_req_1(control):
     """
