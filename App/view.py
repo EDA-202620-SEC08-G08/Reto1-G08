@@ -27,7 +27,7 @@ def load_data(control):
     """
     filename=input("Ingrese el nombre del archivo a cargar: ")
     control,time = logic.load_data(control, filename)
-    print(f"Datos cargados en {time} segundos")
+    print(f"Datos cargados en {time} milisegundos")
     return control
 
 def print_data(control, id):
@@ -47,7 +47,7 @@ def print_req_1(control):
     """
     product = input("Ingrese el nombre del producto: ")
     result, time=logic.req_1(control, product)
-    print(f"Requerimiento 1 ejecutado en {time} segundos")
+    print(f"Requerimiento 1 ejecutado en {time} milisegundos")
     print(f"Producto: {result['product']}")
     print(f"Cantidad de ordenes: {result['count']}")
     print(f"Precio promedio: ${result['avg_price']}")
