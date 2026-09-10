@@ -140,8 +140,8 @@ def print_req_3(control):
     """
         Función que imprime la solución del Requerimiento 3 en consola
     """
-    country = input("Ingrese el pais: ")
-    channel = input("Ingrese el canal: ")
+    country = str(input("Ingrese el pais: "))
+    channel = str(input("Ingrese el canal: "))
     if logic.req_3(control, country, channel) != None:
         time, count, result = logic.req_3(control, country, channel)
         print(f"El tiempo requerido fue {time} segundos")
@@ -160,8 +160,22 @@ def print_req_4(control):
     """
         Función que imprime la solución del Requerimiento 4 en consola
     """
-    # TODO: Imprimir el resultado del requerimiento 4
-    pass
+    country = str(input("Ingrese el pais: "))
+    product = str(input("Ingrese el producto: "))
+    
+    resultado = logic.req_4(control, country, product)
+    
+    if resultado != None:
+        time, count, prom_box, prom_disc, prom_mark, prom_box_ship, amount1, amount2 = logic.req_4(control, country, product)
+        print(f"El tiempo requerido fue {time} segundos")
+        print(f"Se encontraron {count} pedidos que pasaron el filtro")
+        print(f"Promedio precios de cajas: {prom_box}")
+        print(f"Promedio gasto marketing: {prom_mark}")
+        print(f"Promedio cajas importadas: {prom_box_ship}")
+        print(f"Amount mas costoso: {amount1}")
+        print(f"Segundo amount mas costoso: {amount2}")
+    else:
+        print(f"No se encontro por el filtro")
 
 
 def print_req_5(control):
