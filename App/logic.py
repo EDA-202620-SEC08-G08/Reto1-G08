@@ -254,11 +254,13 @@ def req_3(catalog, country, channel):
     """
     # TODO: Modificar el requerimiento 3
     start_time = get_time()
+    
     orders = catalog["orders"]
     count = 0
-    max = 0
+    
     buscar_prod = {}
     buscar_ano = {}
+    
     result = {
               "prom_box" : 0,
               "prom_disc" : 0,
@@ -267,34 +269,43 @@ def req_3(catalog, country, channel):
               "prod_frec" : None,
               "ano_frec" : None
               }
-    for pos in range(0, lt.size(orders)):
+    for pos in range(lt.size(orders)):
         orden = lt.get_element(orders, pos)
+        
         if country == orden["Country"] and channel == orden["Channel"]:
             count += 1
-            result["prom_box"] += orden["Price_per_Box"]
-            result["prom_disc"] += orden["Discount_Pct"]
-            result["prom_mark"] += orden["Marketing_Spend"]
-            result["prom_box_ship"] += orden["Boxes_Shipped"]
-            buscar_prod[orden["Product"]] = buscar_prod.get(orden["Product"], 0) + 1
-            buscar_ano[orden["Order_Date"][:4]] = buscar_ano.get(orden["Order_date"][:4], 0) + 1
-    if count != 0:      
-        result["prom_box"] = result["prom_box"] / count
-        result["prom_disc"] = result["prom_disc"] / count
-        result["prom_mark"] = result["prom_mark"] / count
-        result["prom_box_ship"] = result["prom_box_ship"] / count
-    else:
-        return None
+            
+            result["prom_box"] += float(orden["Price_per_Box"])
+            result["prom_disc"] += float(orden["Discount_Pct"])
+            result["prom_mark"] += float(orden["Marketing_Spend"])
+            result["prom_box_ship"] += int(orden["Boxes_Shipped"])
+            
+            product = orden["Product"]
+            year = orden["Order_Date"][:4]
+            
+            buscar_prod[product] = buscar_prod.get(product, 0) + 1
+            buscar_ano[year] = buscar_ano.get(year, 0) + 1
+            
+    if count == 0:
+        return None      
     
-    for llave, valor in buscar_prod:
-        if valor > max:
-            max = valor
+    result["prom_box"] = result["prom_box"] / count
+    result["prom_disc"] = result["prom_disc"] / count
+    result["prom_mark"] = result["prom_mark"] / count
+    result["prom_box_ship"] = result["prom_box_ship"] / count
+    
+    max_count = 0
+    
+    for llave, valor in buscar_prod.items():
+        if valor > max_count:
+            max_count = valor
             result["prod_frec"] = llave
     
-    max = 0
+    max_count = 0
     
-    for llave, valor in buscar_ano:
-            if valor > max:
-                max = valor
+    for llave, valor in buscar_ano.items():
+            if valor > max_count:
+                max_count = valor
                 result["ano_frec"] = llave
     
     end_time = get_time()
@@ -303,12 +314,85 @@ def req_3(catalog, country, channel):
     return time, count, result
 
 
-def req_4(catalog):
+def req_4(catalog, country, product):
     """
     Retorna el resultado del requerimiento 4
     """
-    # TODO: Modificar el requerimiento 4
-    pass
+    start_time = get_time()
+    orders = catalog["orders"]
+    count = 0
+    prom_box = 0
+    prom_disc = 0
+    prom_mark = 0
+    prom_box_ship = 0
+    max1 = 0
+    max2 = 0
+    temp_max = 0
+    temp_orden = None
+    orden1 = None
+    orden2 = None
+    amount1 = {}
+    amount2 = {}
+    for pos in range(0, lt.size(orders)):
+        orden = lt.get_element(orders, pos)
+        if country == orden["Country"] and product == orden["Product"]:
+            count += 1
+            prom_box += float(orden["Price_per_Box"])
+            prom_disc += float(orden["Discount_Pct"])
+            prom_mark += float(orden["Marketing_Spend"])
+            prom_box_ship += int(orden["Boxes_Shipped"])
+            if float(orden["Amount"]) > max1:
+                max2 = max1
+                max1 = float(orden["Amount"])
+                orden2 = orden1
+                orden1 = orden
+    
+    if count == 0:
+        return None      
+    
+    prom_box = prom_box / count
+    prom_disc = prom_disc / count
+    prom_mark = prom_mark / count
+    prom_box_ship = prom_box_ship / count 
+
+    
+    if max1 == max2:
+        if float(orden1["Marketing_Spend"]) < float(orden2["Marketing_Spend"]):
+            temp_max = max1
+            max1 = max2
+            max2 = temp_max
+            temp_orden = orden1
+            orden1 = orden2
+            orden2 = temp_orden
+        if max1 == max2:
+            if int(orden1["Order_ID"][4:]) < int(orden2["Order_ID"][4:]):
+                temp_max = max1
+                max1 = max2
+                max2 = temp_max
+                temp_orden = orden1
+                orden1 = orden2
+                orden2 = temp_orden
+            
+    
+    amount1 = {
+            "ID" : orden1["Order_ID"],
+            "channel" : orden1["Channel"],
+            "date" : orden1["Order_Date"],
+            "box_ship" : orden1["Boxes_Shipped"],
+            "amount" : max1
+            }
+    amount2 = {
+            "ID" : orden2["Order_ID"],
+            "channel" : orden2["Channel"],
+            "date" : orden2["Order_Date"],
+            "box_ship" : orden2["Boxes_Shipped"],
+            "amount" : max2
+            }
+   
+    end_time = get_time()
+    time = delta_time(start_time, end_time)
+    
+    return time, count, prom_box, prom_disc, prom_mark, prom_box_ship, amount1, amount2
 
 
 def req_5(catalog):
