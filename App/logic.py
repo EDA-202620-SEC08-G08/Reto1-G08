@@ -415,14 +415,14 @@ def req_6(catalog,start_date,end_date):
     orders = catalog["orders"]
     total= lt.size(orders)
     
-    filter=sl.new_list()
+    filter=slt.new_list()
     for i in range(total):
         order= lt.get_element(orders,i)
         date=order["Order_Date"]
         if start_date <=date <=end_date:
-            sl.add_last(filter, order)
+            slt.add_last(filter, order)
     
-    count=sl.size(filter)
+    count=slt.size(filter)
     channels={}
     node = filter["first"]
     while node is not None:
