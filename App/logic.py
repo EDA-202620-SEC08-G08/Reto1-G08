@@ -3,6 +3,7 @@ import csv
 import os
 
 from DataStructures.List import array_list as lt
+from DataStructures.List import single_linked_list as slt
 
 
 def new_logic():
@@ -11,7 +12,8 @@ def new_logic():
     """
     
     catalog={
-        "orders": lt.new_list()
+        "orders": lt.new_list(),
+        "orders_linked": slt.new_list()
     }
     return catalog
 
@@ -30,6 +32,7 @@ def load_data(catalog, filename):
         reader = csv.DictReader(file)
         for row in reader:
             lt.add_last(catalog["orders"], row)
+            slt.add_last(catalog["orders_linked"], row)
     end_time = get_time()
     return catalog, delta_time(start_time, end_time)
 
@@ -395,19 +398,180 @@ def req_4(catalog, country, product):
     return time, count, prom_box, prom_disc, prom_mark, prom_box_ship, amount1, amount2
 
 
-def req_5(catalog):
+def req_5(catalog, filtro, product, start_date, end_date):
     """
     Retorna el resultado del requerimiento 5
     """
     # TODO: Modificar el requerimiento 5
-    pass
+    start_time = get_time()
 
-def req_6(catalog):
+    orders = catalog["orders_linked"]
+
+    count = 0
+    sum_price = 0
+    sum_boxes = 0
+    sum_marketing = 0
+
+    selected_order = None
+
+    node = orders["first"]
+
+    while node is not None:
+        order = node["info"]
+
+        if order["Product"] == product:
+            date = order["Order_Date"]
+
+            if start_date <= date <= end_date:
+                count += 1
+
+                price = float(order["Price_per_Box"])
+                boxes = int(order["Boxes_Shipped"])
+                marketing = float(order["Marketing_Spend"])
+                amount = float(order["Amount"])
+
+                sum_price += price
+                sum_boxes += boxes
+                sum_marketing += marketing
+
+                if selected_order is None:
+                    selected_order = order
+
+                else:
+                    selected_amount = float(selected_order["Amount"])
+                    selected_price = float(selected_order["Price_per_Box"])
+                    selected_marketing = float(selected_order["Marketing_Spend"])
+
+                    if filtro == "MENOR":
+                        if amount < selected_amount:
+                            selected_order = order
+
+                        elif amount == selected_amount:
+                            if price < selected_price:
+                                selected_order = order
+
+                            elif price == selected_price:
+                                if marketing < selected_marketing:
+                                    selected_order = order
+
+                    elif filtro == "MAYOR":
+                        if amount > selected_amount:
+                            selected_order = order
+
+                        elif amount == selected_amount:
+                            if price < selected_price:
+                                selected_order = order
+
+                            elif price == selected_price:
+                                if marketing < selected_marketing:
+                                    selected_order = order
+
+        node = node["next"]
+
+    if count > 0:
+        avg_price = sum_price / count
+        avg_boxes = sum_boxes / count
+        avg_marketing = sum_marketing / count
+    else:
+        avg_price = 0
+        avg_boxes = 0
+        avg_marketing = 0
+
+    end_time = get_time()
+
+    result = {
+        "filter": filtro,
+        "count": count,
+        "selected_order": selected_order,
+        "avg_price": avg_price,
+        "avg_boxes": avg_boxes,
+        "avg_marketing": avg_marketing
+    }
+
+    return result, delta_time(start_time, end_time)
+def req_6(catalog,start_date,end_date):
     """
     Retorna el resultado del requerimiento 6
     """
-    # TODO: Modificar el requerimiento 6
-    pass
+    start_time = get_time()
+    orders = catalog["orders"]
+    total= lt.size(orders)
+    
+    filter=slt.new_list()
+    for i in range(total):
+        order= lt.get_element(orders,i)
+        date=order["Order_Date"]
+        if start_date <=date <=end_date:
+            slt.add_last(filter, order)
+    
+    count=slt.size(filter)
+    channels={}
+    node = filter["first"]
+    while node is not None:
+        order = node["info"]
+        channel=order["Channel"]
+        amount=float(order["Amount"])
+        price=float(order["Price_per_Box"])
+        marketing=float(order["Marketing_Spend"])
+        
+        if channel not in channels:
+            channels[channel]={"count":0,
+                              "sum_amount":0,
+                              "sum_price":0,
+                              "sum_marketing":0,
+                              "max_order":None,
+                              "min_order":None
+        }
+        
+        c=channels[channel]
+        c["count"]+=1
+        c["sum_amount"]+=amount
+        c["sum_price"]+=price
+        c["sum_marketing"]+=marketing
+        
+        if c["max_order"] is None or amount>float(c["max_order"]["Amount"]):
+            c["max_order"]=order
+        if c["min_order"] is None or amount<float(c["min_order"]["Amount"]):
+            c["min_order"]=order
+
+        node = node["next"]
+      
+        
+    top_channel=None
+    top_channel_count=0
+    top_channel_amount=0
+    top_revenue_channel=None
+    top_revenue_amount=0
+    top_revenue_count=0
+        
+    for name, data in channels.items():
+        data["avg_price"] = data["sum_price"] / data["count"] if data["count"] > 0 else 0
+        data["avg_marketing"] = data["sum_marketing"] / data["count"] if data["count"] > 0 else 0
+
+        if data["count"] > top_channel_count:
+            top_channel_name = name
+            top_channel_count = data["count"]
+            top_channel_amount = data["sum_amount"]
+
+        if data["sum_amount"] > top_revenue_amount:
+            top_revenue_name = name
+            top_revenue_amount = data["sum_amount"]
+            top_revenue_count = data["count"]
+
+        
+    end_time = get_time()
+
+    result = {
+        "count": count,
+        "top_channel_name": top_channel_name,
+        "top_channel_count": top_channel_count,
+        "top_channel_amount": top_channel_amount,
+        "top_revenue_name": top_revenue_name,
+        "top_revenue_count": top_revenue_count,
+        "top_revenue_amount": top_revenue_amount,
+        "channels": channels,
+    }
+    return result, delta_time(start_time, end_time)
 
 
 # Funciones para medir tiempos de ejecucion

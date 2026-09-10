@@ -178,15 +178,83 @@ def print_req_5(control):
         Función que imprime la solución del Requerimiento 5 en consola
     """
     # TODO: Imprimir el resultado del requerimiento 5
-    pass
+    filtro = input("Ingrese MENOR o MAYOR: ").upper()
+    product = input("Ingrese el nombre del producto: ")
+    start_date = input("Ingrese la fecha inicial (YYYY-MM-DD): ")
+    end_date = input("Ingrese la fecha final (YYYY-MM-DD): ")
 
+    if filtro != "MENOR" and filtro != "MAYOR":
+        print("El filtro debe ser MENOR o MAYOR.")
+        return
+
+    result, time = logic.req_5(
+        control,
+        filtro,
+        product,
+        start_date,
+        end_date
+    )
+
+    print(f"\nRequerimiento 5 ejecutado en {time:.3f} milisegundos")
+    print(f"Filtro utilizado: {result['filter']}")
+    print(f"Cantidad de pedidos encontrados: {result['count']}")
+
+    if result["count"] == 0:
+        print("No se encontraron pedidos con ese producto en el rango de fechas.")
+        return
+
+    print(f"\nPrecio promedio por caja: ${result['avg_price']:.2f}")
+    print(f"Promedio de cajas enviadas: {result['avg_boxes']:.2f}")
+    print(f"Promedio de inversión en marketing: ${result['avg_marketing']:.2f}")
+
+    order = result["selected_order"]
+
+    print(f"\nPedido seleccionado ({result['filter']} Amount):")
+    print(f"  Precio por caja: ${float(order['Price_per_Box']):.2f}")
+    print(f"  Cajas enviadas: {order['Boxes_Shipped']}")
+    print(f"  Monto: ${float(order['Amount']):.2f}")
+    print(f"  Canal: {order['Channel']}")
+    print(f"  Fecha: {order['Order_Date']}")
+    print(f"  Inversión en marketing: ${float(order['Marketing_Spend']):.2f}")
 
 def print_req_6(control):
     """
         Función que imprime la solución del Requerimiento 6 en consola
     """
     # TODO: Imprimir el resultado del requerimiento 6
-    pass
+    start_date = input("Ingrese la fecha inicial (YYYY-MM-DD): ")
+    end_date = input("Ingrese la fecha final (YYYY-MM-DD): ")
+    result, time = logic.req_6(control, start_date, end_date)
+
+    print(f"\nRequerimiento 6 ejecutado en {time:.2f} milisegundos")
+    print(f"Cantidad de pedidos en el rango de fechas: {result['count']}")
+
+    print(f"\nEl canal más usado es: {result['top_channel_name']}, {result['top_channel_count']} pedidos, recaudo total: ${result['top_channel_amount']:.2f}")
+    print(f"El canal que más recauda es: {result['top_revenue_name']}, {result['top_revenue_count']} pedidos, recaudo total: ${result['top_revenue_amount']:.2f}")
+
+    for name, data in result['channels'].items():
+        print(f"\nCanal: {name}")
+        print(f"Cantidad de pedidos: {data['count']}")
+        print(f"Precio promedio: ${data['avg_price']:.2f}")
+        print(f"Marketing promedio: ${data['avg_marketing']:.2f}")
+
+        max_order = data['max_order']
+        print("Pedido más caro:")
+        print(f"Order_ID: {max_order['Order_ID']}")
+        print(f"Product: {max_order['Product']}")
+        print(f"Country: {max_order['Country']}")
+        print(f"Order_Date: {max_order['Order_Date']}")
+        print(f"Boxes_Shipped: {max_order['Boxes_Shipped']}")
+        print(f"Amount: ${float(max_order['Amount']):.2f}")
+
+        min_order = data['min_order']
+        print("\nPedido más barato:")
+        print(f"Order_ID: {min_order['Order_ID']}")
+        print(f"Product: {min_order['Product']}")
+        print(f"Country: {min_order['Country']}")
+        print(f"Order_Date: {min_order['Order_Date']}")
+        print(f"Boxes_Shipped: {min_order['Boxes_Shipped']}")
+        print(f"Amount: ${float(min_order['Amount']):.2f}")
 
 # Se crea la lógica asociado a la vista
 control = new_logic()
